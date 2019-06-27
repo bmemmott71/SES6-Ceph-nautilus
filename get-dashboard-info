@@ -3,5 +3,5 @@ echo
 echo "Getting dashboard host......"
 ceph mgr services | grep dashboard
 echo
-echo "Getting default admin credentials"
+echo "Getting default admin credentials......"
 salt-call grains.get dashboard_creds
