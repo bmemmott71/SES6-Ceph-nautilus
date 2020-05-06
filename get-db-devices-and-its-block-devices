@@ -1,26 +1,17 @@
 #!/bin/bash
 # Run on osd node.
-# ./db-block-devices.sh | sort -k2 | column -t
+# ./db-block-devices.sh | sort -k2
 
 my_data=$(ceph-volume lvm list | egrep "==== osd|devices|\[db\]|\[block\]" | sed 's/[block]].*//' | sed 's/\[bloc/block-device/g' | sed 's/\[d/db-device/g' | sed 's/devices//g' | sed 's/^ *//;s/ *$//;s/  */ /;')
-#echo "===Start of my_data==="
-#echo "$my_data"
-#echo "===End of my_data====="
 osd_list=$(echo "$my_data"| grep osd | cut -d " " -f2)
-#echo "===Start of osd_list==="
-#echo "$osd_list"
-#echo "===Start of osd_list==="
-for i in $osd_list;do
-#  echo "$i"
-  # Note to self: grep for osd's and add a space after, for uniqueness. 
-  XXX=$(echo "$my_data" | grep "$i\ " -A 4)
+#echo -e "OSD\tBLOCK\t\tDB"
+printf "OSD\tBlock device\tDB device\n"
+for OSD in $osd_list;do
+  # Note to self: grep for osd's and add a space after, for uniqueness.
+  XXX=$(echo "$my_data" | grep "$OSD\ " -A 4)
   YYY=$(echo "$XXX" | tail -n +2)
-#  echo "=== data start ==="
-#  echo "$YYY"
-#  echo "==== data end ===="
-  ZZZ=$(echo "$YYY" | grep "db-device" -A 1| tail -n +2)
-  AAA=$(echo "$YYY" | grep "block-device" -A 1| tail -n +2)
-#  echo "db: $ZZZ"
-#  echo "bk: $AAA"
-  echo "$i  $ZZZ  $AAA"
+  DB=$(echo "$YYY" | grep "db-device" -A 1| tail -n +2)
+  BLOCK=$(echo "$YYY" | grep "block-device" -A 1| tail -n +2)
+  #echo -e "$OSD\t$BLOCK\t$DB"
+  printf "%s\t%s\t%s\n" $OSD $BLOCK $DB
 done
