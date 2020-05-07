@@ -1,6 +1,11 @@
 #!/bin/bash
 # Run on osd node.
 # ./db-block-devices.sh | sort -k2
+# Example:
+OSD     Block device    DB device
+osd.14  /dev/sde        /dev/sda
+osd.3   /dev/sdb        /dev/sda
+osd.8   /dev/sdc        /dev/sda
 
 my_data=$(ceph-volume lvm list | egrep "==== osd|devices|\[db\]|\[block\]" | sed 's/[block]].*//' | sed 's/\[bloc/block-device/g' | sed 's/\[d/db-device/g' | sed 's/devices//g' | sed 's/^ *//;s/ *$//;s/  */ /;')
 osd_list=$(echo "$my_data"| grep osd | cut -d " " -f2)
