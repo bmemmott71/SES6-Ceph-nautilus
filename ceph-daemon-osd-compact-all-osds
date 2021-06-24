@@ -1,0 +1,11 @@
+#!/bin/bash
+for i in $(ceph osd ls); do
+  x=$(ceph osd find $i | egrep "host" | sed '$ d' | cut -d ":" -f2 | sed 's/,$//'| cut -c3- | sed -e 's/"$//')
+  echo "host: $x"
+  echo "osd: $i"
+  echo "ssh $x ceph daemon osd.$i compact"
+  ssh $x ceph daemon osd.$i compact
+  echo
+  sleep 5
+done
+echo "done!"
